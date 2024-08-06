@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block title %}Главная - Погода{% endblock %}
+
+{% block content %}
+    <h1>Погода</h1>
+    {% if user.is_authenticated %}
+        <form method="post" action="{% url 'weather_search' %}">
+            {% csrf_token %}
+            <div class="input-group mb-3">
+                <input type="text" class="form-control" placeholder="Введите название города" name="query">
+                <button class="btn btn-outline-secondary" type="submit">Поиск</button>
+            </div>
+        </form>
+
+        {% if locations %}
+            <h2>Ваши локации:</h2>
+            <ul class="list-group">
+                {% for location, weather in locations %}
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        {{ location.name }} - {{ weather.temperature }}°C, {{ weather.description }}
+                        <form method="post" action="{% url 'remove_location' location.id %}">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-sm btn-danger">Удалить</button>
+                        </form>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>У вас пока нет добавленных локаций.</p>
+        {% endif %}
+    {% else %}
+        <p>Пожалуйста, войдите или зарегистрируйтесь, чтобы использовать приложение.</p>
+    {% endif %}
+{% endblock %}
